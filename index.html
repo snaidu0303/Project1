@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hello, World ✨</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #0a0b10;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --glow-1: #6366f1;
+      --glow-2: #ec4899;
+      --glow-3: #06b6d4;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      perspective: 1000px;
+      position: relative;
+    }
+
+    /* Ambient Background Glow */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.55;
+      animation: float 14s infinite ease-in-out alternate;
+    }
+
+    .blob-1 {
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, var(--glow-1), transparent 70%);
+      top: -100px;
+      left: 15%;
+      animation-duration: 16s;
+    }
+
+    .blob-2 {
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, var(--glow-2), transparent 70%);
+      bottom: -120px;
+      right: 15%;
+      animation-duration: 20s;
+      animation-delay: -5s;
+    }
+
+    .blob-3 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--glow-3), transparent 70%);
+      top: 40%;
+      left: 55%;
+      animation-duration: 12s;
+      animation-delay: -8s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(40px, -30px) scale(1.08); }
+      100% { transform: translate(-30px, 40px) scale(0.95); }
+    }
+
+    /* Interactive Particle Canvas */
+    canvas#particles {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Glass Container */
+    .container {
+      position: relative;
+      z-index: 2;
+      width: 90%;
+      max-width: 600px;
+      padding: 3rem 2.5rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 28px;
+      border: 1px solid var(--card-border);
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 2px 20px rgba(99, 102, 241, 0.15);
+      text-align: center;
+      transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+    }
+
+    .container:hover {
+      box-shadow: 
+        0 28px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+        0 4px 35px rgba(236, 72, 153, 0.25);
+    }
+
+    /* Top Pill Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1.1rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #e2e8f0;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: pulseBadge 3s infinite ease-in-out;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    @keyframes pulseBadge {
+      0%, 100% { border-color: rgba(255, 255, 255, 0.14); }
+      50% { border-color: rgba(99, 102, 241, 0.5); }
+    }
+
+    /* Main Headline */
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 8vw, 4.8rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.08;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 30%, #a855f7 65%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% auto;
+      animation: textShine 8s linear infinite;
+    }
+
+    @keyframes textShine {
+      to { background-position: 200% center; }
+    }
+
+    /* Subtitle Description */
+    p.description {
+      font-size: 1.125rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin-bottom: 2.25rem;
+      font-weight: 400;
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Interactive Buttons & Actions */
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1.75rem;
+      font-size: 0.975rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 14px;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: #ffffff;
+      box-shadow: 0 8px 24px -4px rgba(124, 58, 237, 0.45);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 30px -4px rgba(124, 58, 237, 0.65);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* Footer Metadata */
+    .card-footer {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .status-clock {
+      font-variant-numeric: tabular-nums;
+      color: #94a3b8;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container {
+        padding: 2.25rem 1.5rem;
+      }
+      .actions {
+        flex-direction: column;
+        width: 100%;
+      }
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Atmospheric Glow Background -->
+  <div class="ambient-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Interactive Particles Canvas -->
+  <canvas id="particles"></canvas>
+
+  <!-- Main Card -->
+  <main class="container" id="tiltCard">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      <span>Live Preview &bull; Project 1</span>
+    </div>
+
+    <h1>Hello, World!</h1>
+
+    <p class="description">
+      Welcome to your freshly crafted canvas. Designed with glassmorphic depth, dynamic particles, and modern flair.
+    </p>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="celebrateBtn">
+        <span>✨ Celebrate</span>
+      </button>
+      <button class="btn btn-secondary" id="themeBtn">
+        <span>🎨 Shift Mood</span>
+      </button>
+    </div>
+
+    <div class="card-footer">
+      <span>Ready to build something great</span>
+      <span class="status-clock" id="liveClock">--:--:--</span>
+    </div>
+  </main>
+
+  <script>
+    // Live Clock Display
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('liveClock').textContent = now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // 3D Tilt Effect on Mouse Move
+    const card = document.getElementById('tiltCard');
+    document.addEventListener('mousemove', (e) => {
+      const { innerWidth: width, innerHeight: height } = window;
+      const x = (e.clientX - width / 2) / (width / 2);
+      const y = (e.clientY - height / 2) / (height / 2);
+
+      const maxTilt = 8;
+      const tiltX = -y * maxTilt;
+      const tiltY = x * maxTilt;
+
+      card.style.transform = `rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
+    });
+
+    // Reset card on mouse leave
+    document.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
+
+    // Mood / Palette Swapping
+    const themes = [
+      { glow1: '#6366f1', glow2: '#ec4899', glow3: '#06b6d4', btn: 'linear-gradient(135deg, #6366f1, #a855f7)' },
+      { glow1: '#10b981', glow2: '#06b6d4', glow3: '#3b82f6', btn: 'linear-gradient(135deg, #10b981, #06b6d4)' },
+      { glow1: '#f59e0b', glow2: '#ef4444', glow3: '#ec4899', btn: 'linear-gradient(135deg, #f59e0b, #ef4444)' },
+      { glow1: '#8b5cf6', glow2: '#3b82f6', glow3: '#d946ef', btn: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }
+    ];
+    let currentThemeIndex = 0;
+    const themeBtn = document.getElementById('themeBtn');
+    const primaryBtn = document.getElementById('celebrateBtn');
+
+    themeBtn.addEventListener('click', () => {
+      currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+      const theme = themes[currentThemeIndex];
+      document.documentElement.style.setProperty('--glow-1', theme.glow1);
+      document.documentElement.style.setProperty('--glow-2', theme.glow2);
+      document.documentElement.style.setProperty('--glow-3', theme.glow3);
+      primaryBtn.style.background = theme.btn;
+      spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 25);
+    });
+
+    // Particle & Confetti Canvas Engine
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor(x, y, isExplosion = false) {
+        this.x = x ?? Math.random() * canvas.width;
+        this.y = y ?? Math.random() * canvas.height;
+        this.isExplosion = isExplosion;
+        this.radius = isExplosion ? Math.random() * 4 + 2 : Math.random() * 2 + 0.5;
+
+        if (isExplosion) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 8 + 3;
+          this.vx = Math.cos(angle) * speed;
+          this.vy = Math.sin(angle) * speed - 2;
+          this.gravity = 0.2;
+          this.alpha = 1;
+          this.decay = Math.random() * 0.02 + 0.015;
+        } else {
+          this.vx = (Math.random() - 0.5) * 0.4;
+          this.vy = -Math.random() * 0.6 - 0.2;
+          this.alpha = Math.random() * 0.5 + 0.2;
+          this.decay = 0;
+        }
+
+        const colors = ['#6366f1', '#ec4899', '#38bdf8', '#fbbf24', '#a855f7', '#34d399'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      update() {
+        if (this.isExplosion) {
+          this.vy += this.gravity;
+          this.x += this.vx;
+          this.y += this.vy;
+          this.alpha -= this.decay;
+        } else {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.y < -10) this.y = canvas.height + 10;
+          if (this.x < -10) this.x = canvas.width + 10;
+          if (this.x > canvas.width + 10) this.x = -10;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Initialize floating ambient particles
+    for (let i = 0; i < 45; i++) {
+      particles.push(new Particle());
+    }
+
+    function spawnBurst(x, y, count = 60) {
+      for (let i = 0; i < count; i++) {
+        particles.push(new Particle(x, y, true));
+      }
+    }
+
+    // Celebrate button click trigger
+    primaryBtn.addEventListener('click', (e) => {
+      const rect = primaryBtn.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      spawnBurst(x, y, 70);
+    });
+
+    // Animation Loop
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.update();
+        p.draw();
+
+        if (p.isExplosion && p.alpha <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
