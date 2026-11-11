@@ -33,11 +33,82 @@
       color: var(--text-main);
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 5.5rem 1.25rem 2.5rem;
       overflow-x: hidden;
       perspective: 1000px;
       position: relative;
+    }
+
+    /* Top Floating Navigation */
+    .navbar {
+      position: fixed;
+      top: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(92%, 640px);
+      padding: 0.65rem 1.25rem;
+      background: rgba(15, 17, 26, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-main);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-logo:hover {
+      transform: scale(1.03);
+    }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.45rem 0.95rem;
+      border-radius: 999px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-link.active {
+      color: #ffffff;
+      background: rgba(99, 102, 241, 0.28);
+      border: 1px solid rgba(99, 102, 241, 0.45);
     }
 
     /* Ambient Background Glow */
@@ -121,6 +192,7 @@
       text-align: center;
       transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.3s ease;
       transform-style: preserve-3d;
+      margin: auto 0;
     }
 
     .container:hover {
@@ -285,6 +357,18 @@
 </head>
 <body>
 
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <span>✨</span> Project 1
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+  </nav>
+
   <!-- Atmospheric Glow Background -->
   <div class="ambient-bg">
     <div class="blob blob-1"></div>
@@ -315,6 +399,12 @@
       <button class="btn btn-secondary" id="themeBtn">
         <span>🎨 Shift Mood</span>
       </button>
+      <a href="about.html" class="btn btn-secondary">
+        <span>📖 About Us</span>
+      </a>
+      <a href="contact.html" class="btn btn-secondary">
+        <span>✉️ Contact</span>
+      </a>
     </div>
 
     <div class="card-footer">

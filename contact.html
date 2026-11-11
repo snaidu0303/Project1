@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us • Project 1</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #0a0b10;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --glow-1: #ec4899;
+      --glow-2: #6366f1;
+      --glow-3: #06b6d4;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 6rem 1.25rem 3rem;
+      overflow-x: hidden;
+      perspective: 1000px;
+      position: relative;
+    }
+
+    /* Ambient Background Glow */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.55;
+      animation: float 14s infinite ease-in-out alternate;
+    }
+
+    .blob-1 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--glow-1), transparent 70%);
+      top: -120px;
+      right: 15%;
+      animation-duration: 18s;
+    }
+
+    .blob-2 {
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, var(--glow-2), transparent 70%);
+      bottom: -100px;
+      left: 15%;
+      animation-duration: 16s;
+      animation-delay: -4s;
+    }
+
+    .blob-3 {
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, var(--glow-3), transparent 70%);
+      top: 45%;
+      right: 50%;
+      animation-duration: 13s;
+      animation-delay: -7s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(35px, -30px) scale(1.08); }
+      100% { transform: translate(-30px, 35px) scale(0.95); }
+    }
+
+    /* Interactive Particle Canvas */
+    canvas#particles {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Top Floating Navigation */
+    .navbar {
+      position: fixed;
+      top: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(92%, 640px);
+      padding: 0.65rem 1.25rem;
+      background: rgba(15, 17, 26, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-main);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-logo:hover {
+      transform: scale(1.03);
+    }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.45rem 0.95rem;
+      border-radius: 999px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-link.active {
+      color: #ffffff;
+      background: rgba(236, 72, 153, 0.28);
+      border: 1px solid rgba(236, 72, 153, 0.45);
+    }
+
+    /* Glass Container */
+    .container {
+      position: relative;
+      z-index: 2;
+      width: 92%;
+      max-width: 720px;
+      padding: 3rem 2.5rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 28px;
+      border: 1px solid var(--card-border);
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 2px 20px rgba(236, 72, 153, 0.15);
+      text-align: center;
+      transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+      margin: auto 0;
+    }
+
+    .container:hover {
+      box-shadow: 
+        0 28px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+        0 4px 35px rgba(99, 102, 241, 0.25);
+    }
+
+    /* Top Pill Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1.1rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #e2e8f0;
+      margin-bottom: 1.75rem;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+      animation: pulseBadge 3s infinite ease-in-out;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: #ec4899;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #ec4899;
+    }
+
+    @keyframes pulseBadge {
+      0%, 100% { border-color: rgba(255, 255, 255, 0.14); }
+      50% { border-color: rgba(236, 72, 153, 0.5); }
+    }
+
+    /* Main Headline */
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 0%, #fed7aa 25%, #ec4899 65%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% auto;
+      animation: textShine 8s linear infinite;
+    }
+
+    @keyframes textShine {
+      to { background-position: 200% center; }
+    }
+
+    p.description {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Info Cards Bar */
+    .contact-info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.25rem;
+      text-align: center;
+    }
+
+    .contact-info-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1rem 0.75rem;
+      transition: all 0.25s ease;
+    }
+
+    .contact-info-card:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(236, 72, 153, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .info-icon {
+      font-size: 1.35rem;
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+
+    .info-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .info-val {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #ffffff;
+      word-break: break-word;
+    }
+
+    /* Form Styles */
+    .contact-form {
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .form-label {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      letter-spacing: 0.02em;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 0.85rem 1.1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: rgba(148, 163, 184, 0.6);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: #ec4899;
+      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    /* Success Alert */
+    .success-alert {
+      display: none;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 14px;
+      color: #6ee7b7;
+      font-size: 0.92rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 1.25rem;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons */
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1.75rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 14px;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ec4899, #a855f7);
+      color: #ffffff;
+      box-shadow: 0 8px 24px -4px rgba(236, 72, 153, 0.45);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 30px -4px rgba(236, 72, 153, 0.65);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 1rem 1.75rem;
+      font-size: 1rem;
+    }
+
+    /* Page Navigation Quick Links */
+    .nav-jump-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .nav-jump-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-jump-links a:hover {
+      color: #38bdf8;
+    }
+
+    /* Footer Metadata */
+    .card-footer {
+      margin-top: 2.25rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .status-clock {
+      font-variant-numeric: tabular-nums;
+      color: #94a3b8;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .form-row,
+      .contact-info-grid {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 2.25rem 1.5rem;
+      }
+      .actions {
+        flex-direction: column;
+        width: 100%;
+      }
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <span>✨</span> Project 1
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="contact.html" class="nav-link active">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Atmospheric Glow Background -->
+  <div class="ambient-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Interactive Particles Canvas -->
+  <canvas id="particles"></canvas>
+
+  <!-- Main Card -->
+  <main class="container" id="tiltCard">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      <span>Contact Us &bull; Let's Connect</span>
+    </div>
+
+    <h1>Get in Touch</h1>
+
+    <p class="description">
+      Have an ambitious idea, a question, or want to collaborate? Send us a message and we'll connect soon.
+    </p>
+
+    <!-- Contact Info Cards -->
+    <div class="contact-info-grid">
+      <div class="contact-info-card">
+        <span class="info-icon">✉️</span>
+        <div class="info-label">Email</div>
+        <div class="info-val">hello@project1.dev</div>
+      </div>
+      <div class="contact-info-card">
+        <span class="info-icon">📍</span>
+        <div class="info-label">Location</div>
+        <div class="info-val">San Francisco, CA</div>
+      </div>
+      <div class="contact-info-card">
+        <span class="info-icon">⚡</span>
+        <div class="info-label">Response Time</div>
+        <div class="info-val">&lt; 24 Hours</div>
+      </div>
+    </div>
+
+    <!-- Live Success Message -->
+    <div class="success-alert" id="successAlert">
+      🎉 Thank you! Your message has been sent successfully. We'll be in touch soon!
+    </div>
+
+    <!-- Contact Form -->
+    <form class="contact-form" id="contactForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="userName">Your Name</label>
+          <input type="text" id="userName" class="form-input" placeholder="Alex Morgan" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="userEmail">Email Address</label>
+          <input type="email" id="userEmail" class="form-input" placeholder="alex@example.com" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="userSubject">Subject</label>
+        <input type="text" id="userSubject" class="form-input" placeholder="What are you working on?" required />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="userMessage">Message</label>
+        <textarea id="userMessage" class="form-textarea" placeholder="Share the details with us..." required></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-submit" id="submitBtn">
+        <span>Send Message 🚀</span>
+      </button>
+    </form>
+
+    <!-- Quick Navigation Jump Links -->
+    <div class="nav-jump-links">
+      <a href="about.html">
+        <span>← Learn More About Us</span>
+      </a>
+      <span style="color: rgba(255,255,255,0.2);">&bull;</span>
+      <a href="index.html">
+        <span>Return to Home 🏠</span>
+      </a>
+    </div>
+
+    <div class="card-footer">
+      <span>Project 1 &bull; Contact Page</span>
+      <span class="status-clock" id="liveClock">--:--:--</span>
+    </div>
+  </main>
+
+  <script>
+    // Live Clock Display
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('liveClock').textContent = now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // 3D Tilt Effect on Mouse Move
+    const card = document.getElementById('tiltCard');
+    document.addEventListener('mousemove', (e) => {
+      const { innerWidth: width, innerHeight: height } = window;
+      const x = (e.clientX - width / 2) / (width / 2);
+      const y = (e.clientY - height / 2) / (height / 2);
+
+      const maxTilt = 5;
+      const tiltX = -y * maxTilt;
+      const tiltY = x * maxTilt;
+
+      card.style.transform = `rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
+    });
+
+    document.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
+
+    // Particle Canvas Engine
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor(x, y, isExplosion = false) {
+        this.x = x ?? Math.random() * canvas.width;
+        this.y = y ?? Math.random() * canvas.height;
+        this.isExplosion = isExplosion;
+        this.radius = isExplosion ? Math.random() * 4 + 2 : Math.random() * 2 + 0.5;
+
+        if (isExplosion) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 8 + 3;
+          this.vx = Math.cos(angle) * speed;
+          this.vy = Math.sin(angle) * speed - 2;
+          this.gravity = 0.2;
+          this.alpha = 1;
+          this.decay = Math.random() * 0.02 + 0.015;
+        } else {
+          this.vx = (Math.random() - 0.5) * 0.4;
+          this.vy = -Math.random() * 0.6 - 0.2;
+          this.alpha = Math.random() * 0.5 + 0.2;
+          this.decay = 0;
+        }
+
+        const colors = ['#ec4899', '#6366f1', '#38bdf8', '#fbbf24', '#a855f7', '#34d399'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      update() {
+        if (this.isExplosion) {
+          this.vy += this.gravity;
+          this.x += this.vx;
+          this.y += this.vy;
+          this.alpha -= this.decay;
+        } else {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.y < -10) this.y = canvas.height + 10;
+          if (this.x < -10) this.x = canvas.width + 10;
+          if (this.x > canvas.width + 10) this.x = -10;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < 40; i++) {
+      particles.push(new Particle());
+    }
+
+    function spawnBurst(x, y, count = 70) {
+      for (let i = 0; i < count; i++) {
+        particles.push(new Particle(x, y, true));
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.update();
+        p.draw();
+        if (p.isExplosion && p.alpha <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Form submission interaction
+    const contactForm = document.getElementById('contactForm');
+    const successAlert = document.getElementById('successAlert');
+    const submitBtn = document.getElementById('submitBtn');
+
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // Button loading state
+      const originalBtnText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>Sending... ✨</span>`;
+
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+
+        // Show success alert
+        successAlert.style.display = 'block';
+
+        // Trigger celebratory particles
+        const rect = submitBtn.getBoundingClientRect();
+        spawnBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 80);
+
+        // Reset inputs
+        contactForm.reset();
+
+        // Scroll smoothly to alert if needed
+        successAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 700);
+    });
+  </script>
+</body>
+</html>
