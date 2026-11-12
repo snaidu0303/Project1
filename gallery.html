@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery • Project 1</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #0a0b10;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --glow-1: #6366f1;
+      --glow-2: #ec4899;
+      --glow-3: #06b6d4;
+      --glow-4: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 6rem 1.25rem 3.5rem;
+      overflow-x: hidden;
+      perspective: 1000px;
+      position: relative;
+    }
+
+    /* Ambient Background Glow */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.55;
+      animation: float 14s infinite ease-in-out alternate;
+    }
+
+    .blob-1 {
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, var(--glow-1), transparent 70%);
+      top: -100px;
+      left: 15%;
+      animation-duration: 16s;
+    }
+
+    .blob-2 {
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, var(--glow-2), transparent 70%);
+      bottom: -120px;
+      right: 15%;
+      animation-duration: 20s;
+      animation-delay: -5s;
+    }
+
+    .blob-3 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--glow-3), transparent 70%);
+      top: 40%;
+      left: 55%;
+      animation-duration: 12s;
+      animation-delay: -8s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(35px, -30px) scale(1.08); }
+      100% { transform: translate(-30px, 35px) scale(0.95); }
+    }
+
+    /* Interactive Particle Canvas */
+    canvas#particles {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Top Floating Navigation */
+    .navbar {
+      position: fixed;
+      top: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(94%, 660px);
+      padding: 0.65rem 1.25rem;
+      background: rgba(15, 17, 26, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-main);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-logo:hover {
+      transform: scale(1.03);
+    }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.45rem 0.95rem;
+      border-radius: 999px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-link.active {
+      color: #ffffff;
+      background: rgba(99, 102, 241, 0.28);
+      border: 1px solid rgba(99, 102, 241, 0.45);
+    }
+
+    /* Main Glass Container */
+    .container {
+      position: relative;
+      z-index: 2;
+      width: min(94%, 960px);
+      padding: 3rem 2.5rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 28px;
+      border: 1px solid var(--card-border);
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 2px 20px rgba(139, 92, 246, 0.15);
+      text-align: center;
+      transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+      margin: auto 0;
+    }
+
+    .container:hover {
+      box-shadow: 
+        0 28px 60px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+        0 4px 35px rgba(236, 72, 153, 0.22);
+    }
+
+    /* Top Pill Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1.1rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #e2e8f0;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: pulseBadge 3s infinite ease-in-out;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: #8b5cf6;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #8b5cf6;
+    }
+
+    @keyframes pulseBadge {
+      0%, 100% { border-color: rgba(255, 255, 255, 0.14); }
+      50% { border-color: rgba(139, 92, 246, 0.5); }
+    }
+
+    /* Main Headline */
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.12;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 30%, #a855f7 65%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Description */
+    .description {
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      font-weight: 400;
+      line-height: 1.6;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 2.25rem;
+    }
+
+    /* Controls: Filter Tabs & Search Bar */
+    .gallery-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2.25rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.45rem 0.95rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .filter-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .filter-btn.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4));
+      border-color: rgba(168, 85, 247, 0.6);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+    }
+
+    .filter-count {
+      display: inline-block;
+      font-size: 0.72rem;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      color: #cbd5e1;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1 1 220px;
+      max-width: 300px;
+      margin-left: auto;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(15, 17, 26, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 0.5rem 1rem 0.5rem 2.25rem;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: rgba(168, 85, 247, 0.6);
+      background: rgba(15, 17, 26, 0.9);
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+    }
+
+    .search-input::placeholder {
+      color: #64748b;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    /* Gallery Grid */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.75rem;
+      text-align: left;
+    }
+
+    /* Gallery Card */
+    .gallery-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .gallery-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(168, 85, 247, 0.4);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(99, 102, 241, 0.15);
+    }
+
+    .gallery-card.hidden {
+      display: none;
+    }
+
+    /* Card Artwork Canvas Preview */
+    .card-preview {
+      width: 100%;
+      height: 200px;
+      position: relative;
+      background: #0d0f17;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .card-preview svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-card:hover .card-preview svg {
+      transform: scale(1.05);
+    }
+
+    .card-category-badge {
+      position: absolute;
+      top: 0.85rem;
+      left: 0.85rem;
+      padding: 0.25rem 0.65rem;
+      background: rgba(10, 11, 16, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #cbd5e1;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      z-index: 2;
+    }
+
+    .card-like-btn {
+      position: absolute;
+      top: 0.85rem;
+      right: 0.85rem;
+      background: rgba(10, 11, 16, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 999px;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+      z-index: 2;
+    }
+
+    .card-like-btn:hover {
+      background: rgba(236, 72, 153, 0.2);
+      border-color: rgba(236, 72, 153, 0.5);
+      color: #f43f5e;
+      transform: scale(1.05);
+    }
+
+    .card-like-btn.liked {
+      background: rgba(236, 72, 153, 0.25);
+      border-color: rgba(236, 72, 153, 0.6);
+      color: #fb7185;
+    }
+
+    /* Card Details */
+    .card-body {
+      padding: 1.25rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.15rem;
+      flex-grow: 1;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .card-footer-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .inspect-hint {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #a855f7;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: gap 0.2s ease;
+    }
+
+    .gallery-card:hover .inspect-hint {
+      gap: 0.55rem;
+      color: #38bdf8;
+    }
+
+    .item-year {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.75rem;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 18px;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.2rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Bottom Action Buttons */
+    .actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1.6rem;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.2, 0, 0.2, 1);
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: #ffffff;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 28px rgba(99, 102, 241, 0.55);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* Card Footer Metadata */
+    .card-footer {
+      margin-top: 2.25rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .status-clock {
+      font-variant-numeric: tabular-nums;
+      color: #94a3b8;
+    }
+
+    /* Interactive Lightbox Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 7, 12, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: rgba(20, 24, 38, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      width: min(92%, 700px);
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(168, 85, 247, 0.25);
+      transform: scale(0.94);
+      transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+      position: relative;
+      text-align: left;
+    }
+
+    .modal-backdrop.active .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 10;
+    }
+
+    .modal-close-btn:hover {
+      background: rgba(236, 72, 153, 0.3);
+      border-color: rgba(236, 72, 153, 0.6);
+      transform: rotate(90deg);
+    }
+
+    .modal-preview-zone {
+      width: 100%;
+      height: 260px;
+      background: #090b12;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 24px 24px 0 0;
+    }
+
+    .modal-preview-zone svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .modal-content {
+      padding: 1.75rem 2rem 2rem;
+    }
+
+    .modal-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #a855f7;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.85rem;
+    }
+
+    .modal-long-desc {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .spec-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .spec-name {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      margin-bottom: 0.2rem;
+    }
+
+    .spec-val {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      .container {
+        padding: 2.25rem 1.25rem;
+      }
+      .search-box {
+        max-width: 100%;
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .navbar {
+        width: 96%;
+        padding: 0.5rem 0.75rem;
+      }
+      .nav-logo {
+        font-size: 0.95rem;
+        gap: 0.25rem;
+      }
+      .nav-links {
+        gap: 0.2rem;
+      }
+      .nav-link {
+        font-size: 0.8rem;
+        padding: 0.35rem 0.55rem;
+      }
+      .modal-specs-grid {
+        grid-template-columns: 1fr;
+      }
+      .actions {
+        flex-direction: column;
+        width: 100%;
+      }
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <span>✨</span> Project 1
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="gallery.html" class="nav-link active">Gallery</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Atmospheric Glow Background -->
+  <div class="ambient-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Interactive Particles Canvas -->
+  <canvas id="particles"></canvas>
+
+  <!-- Main Card -->
+  <main class="container" id="tiltCard">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      <span>Showcase &bull; Interactive Gallery</span>
+    </div>
+
+    <h1>Visual Explorations</h1>
+
+    <p class="description">
+      Step into our digital showcase — a curated gallery of glassmorphic systems, generative waveforms, 3D shaders, and high-performance user interfaces.
+    </p>
+
+    <!-- Controls: Filter Pills & Search -->
+    <div class="gallery-controls">
+      <div class="filter-pills" id="filterPills">
+        <button class="filter-btn active" data-category="all">
+          <span>All Works</span>
+          <span class="filter-count">8</span>
+        </button>
+        <button class="filter-btn" data-category="ui">
+          <span>UI & Systems</span>
+          <span class="filter-count">3</span>
+        </button>
+        <button class="filter-btn" data-category="3d">
+          <span>3D & Motion</span>
+          <span class="filter-count">2</span>
+        </button>
+        <button class="filter-btn" data-category="generative">
+          <span>Generative</span>
+          <span class="filter-count">3</span>
+        </button>
+      </div>
+
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="gallerySearch" class="search-input" placeholder="Search gallery or tags..." />
+      </div>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div class="gallery-grid" id="galleryGrid">
+
+      <!-- Item 1: Neo-Glass UI System -->
+      <article class="gallery-card" data-category="ui" data-index="0">
+        <div class="card-preview">
+          <span class="card-category-badge">✨ UI & Systems</span>
+          <button class="card-like-btn" data-id="item-1" title="Appreciate project">
+            <span class="like-heart">🤍</span>
+            <span class="like-count">142</span>
+          </button>
+          <!-- SVG Artwork: Neo-Glass Dashboard -->
+          <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g1-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#a855f7" stop-opacity="0.8"/>
+              </linearGradient>
+              <linearGradient id="g1-card" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.15)"/>
+                <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+              </linearGradient>
+            </defs>
+            <!-- Background grid pattern -->
+            <path d="M 0,50 L 400,50 M 0,100 L 400,100 M 0,150 L 400,150 M 100,0 L 100,200 M 200,0 L 200,200 M 300,0 L 300,200" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <!-- Frosted UI Card 1 -->
+            <rect x="40" y="30" width="320" height="140" rx="16" fill="url(#g1-card)" stroke="rgba(255,255,255,0.2)" stroke-width="1.2"/>
+            <!-- Header bar -->
+            <circle cx="65" cy="50" r="5" fill="#ef4444"/>
+            <circle cx="80" cy="50" r="5" fill="#f59e0b"/>
+            <circle cx="95" cy="50" r="5" fill="#10b981"/>
+            <rect x="120" y="47" width="120" height="7" rx="3.5" fill="rgba(255,255,255,0.2)"/>
+            <!-- Metric bars & charts -->
+            <rect x="65" y="75" width="80" height="70" rx="8" fill="rgba(99,102,241,0.18)" stroke="rgba(99,102,241,0.4)" stroke-width="1"/>
+            <circle cx="105" cy="110" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/>
+            <circle cx="105" cy="110" r="22" fill="none" stroke="#6366f1" stroke-width="5" stroke-dasharray="100" stroke-dashoffset="30"/>
+            <rect x="165" y="75" width="170" height="70" rx="8" fill="rgba(168,85,247,0.12)" stroke="rgba(168,85,247,0.3)" stroke-width="1"/>
+            <!-- Wave chart line -->
+            <path d="M 180,125 Q 200,85 220,110 T 260,95 T 300,120 T 325,85" fill="none" stroke="url(#g1-grad)" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="325" cy="85" r="4" fill="#38bdf8"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title-row">
+            <h3 class="card-title">Neo-Glass UI System</h3>
+            <span class="item-year">2026</span>
+          </div>
+          <p class="card-desc">Multi-layered translucent interface with dynamic optical refraction, depth hierarchy, and real-time telemetry gauges.</p>
+          <div class="card-tags">
+            <span class="card-tag">#Glassmorphism</span>
+            <span class="card-tag">#DesignSystem</span>
+            <span class="card-tag">#CSS3</span>
+          </div>
+          <div class="card-footer-action">
+            <span class="inspect-hint">Explore Details →</span>
+            <span class="item-year">Interactive</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Item 2: Quantum Aurora 3D -->
+      <article class="gallery-card" data-category="3d" data-index="1">
+        <div class="card-preview">
+          <span class="card-category-badge">🪐 3D & Motion</span>
+          <button class="card-like-btn" data-id="item-2" title="Appreciate project">
+            <span class="like-heart">🤍</span>
+            <span class="like-count">219</span>
+          </button>
+          <!-- SVG Artwork: 3D Aurora Rings Sphere -->
+          <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="g2-glow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9"/>
+                <stop offset="40%" stop-color="#6366f1" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#0a0b10" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="200" cy="100" r="85" fill="url(#g2-glow)"/>
+            <!-- Central Core -->
+            <circle cx="200" cy="100" r="34" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+            <circle cx="200" cy="100" r="22" fill="#6366f1" opacity="0.65"/>
+            <!-- Orbital Rings -->
+            <ellipse cx="200" cy="100" rx="90" ry="26" fill="none" stroke="#ec4899" stroke-width="2.5" transform="rotate(-20 200 100)" stroke-dasharray="14 6"/>
+            <ellipse cx="200" cy="100" rx="115" ry="32" fill="none" stroke="#06b6d4" stroke-width="2" transform="rotate(28 200 100)"/>
+            <ellipse cx="200" cy="100" rx="130" ry="42" fill="none" stroke="#a855f7" stroke-width="1.5" transform="rotate(-5 200 100)"/>
+            <!-- Floating node points -->
+            <circle cx="125" cy="72" r="4.5" fill="#38bdf8"/>
+            <circle cx="270" cy="132" r="5" fill="#ec4899"/>
+            <circle cx="310" cy="85" r="3.5" fill="#a855f7"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title-row">
+            <h3 class="card-title">Quantum Aurora 3D</h3>
+            <span class="item-year">2026</span>
+          </div>
+          <p class="card-desc">Luminous hyper-dimensional planetary sphere surrounded by concentric orbital harmonics and particle fields.</p>
+          <div class="card-tags">
+            <span class="card-tag">#WebGL</span>
+            <span class="card-tag">#ThreeJS</span>
+            <span class="card-tag">#GLSL</span>
+          </div>
+          <div class="card-footer-action">
+            <span class="inspect-hint">Explore Details →</span>
+            <span class="item-year">60 FPS</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Item 3: Neural Synapse Matrix -->
+      <article class="gallery-card" data-category="generative" data-index="2">
+        <div class="card-preview">
+          <span class="card-category-badge">🧠 Generative</span>
+          <button class="card-like-btn" data-id="item-3" title="Appreciate project">
+            <span class="like-heart">🤍</span>
+            <span class="like-count">184</span>
+          </button>
+          <!-- SVG Artwork: Neural Synapse Network -->
+          <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g3-line" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#34d399"/>
+                <stop offset="50%" stop-color="#06b6d4"/>
+                <stop offset="100%" stop-color="#6366f1"/>
+              </linearGradient>
+            </defs>
+            <!-- Connecting pathways -->
+            <g stroke="url(#g3-line)" stroke-width="1.5" opacity="0.6">
+              <line x1="80" y1="60" x2="150" y2="40" />
+              <line x1="150" y1="40" x2="220" y2="80" />
+              <line x1="80" y1="60" x2="120" y2="140" />
+              <line x1="120" y1="140" x2="220" y2="80" />
+              <line x1="220" y1="80" x2="290" y2="50" />
+              <line x1="220" y1="80" x2="270" y2="150" />
+              <line x1="120" y1="140" x2="200" y2="160" />
+              <line x1="200" y1="160" x2="270" y2="150" />
+              <line x1="290" y1="50" x2="340" y2="110" />
+              <line x1="270" y1="150" x2="340" y2="110" />
+            </g>
+            <!-- Glowing Nodes -->
+            <circle cx="80" cy="60" r="7" fill="#34d399" />
+            <circle cx="150" cy="40" r="5" fill="#06b6d4" />
+            <circle cx="120" cy="140" r="6" fill="#38bdf8" />
+            <circle cx="200" cy="160" r="5" fill="#34d399" />
+            <circle cx="220" cy="80" r="11" fill="#6366f1" stroke="#38bdf8" stroke-width="2"/>
+            <circle cx="290" cy="50" r="7" fill="#a855f7" />
+            <circle cx="270" cy="150" r="8" fill="#ec4899" />
+            <circle cx="340" cy="110" r="6" fill="#34d399" />
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title-row">
+            <h3 class="card-title">Neural Synapse Matrix</h3>
+            <span class="item-year">2026</span>
+          </div>
+          <p class="card-desc">Procedural graph clustering simulation visualizing real-time transmission waves across artificial neural networks.</p>
+          <div class="card-tags">
+            <span class="card-tag">#CanvasAPI</span>
+            <span class="card-tag">#Algorithms</span>
+            <span class="card-tag">#AI-Viz</span>
+          </div>
+          <div class="card-footer-action">
+            <span class="inspect-hint">Explore Details →</span>
+            <span class="item-year">Algorithmic</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Item 4: Cyberpunk HUD Telemetry -->
+      <article class="gallery-card" data-category="ui" data-index="3">
+        <div class="card-preview">
+          <span class="card-category-badge">⚡ UI & Systems</span>
+          <button class="card-like-btn" data-id="item-4" title="Appreciate project">
+            <span class="like-heart">🤍</span>
+            <span class="like-count">305</span>
+          </button>
+          <!-- SVG Artwork: Futuristic HUD Cockpit -->
+          <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g4-hud" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#06b6d4"/>
+                <stop offset="100%" stop-color="#3b82f6"/>
+              </linearGradient>
+            </defs>
+            <!-- Crosshairs and targeting reticle -->
+            <circle cx="200" cy="100" r="70" fill="none" stroke="rgba(6,182,212,0.25)" stroke-width="1.5" stroke-dasharray="10 5"/>
+            <circle cx="200" cy="100" r="50" fill="none" stroke="#06b6d4" stroke-width="2"/>
+            <circle cx="200" cy="100" r="28" fill="rgba(6,182,212,0.1)"/>
+            <path d="M 120,100 L 150,100 M 250,100 L 280,100 M 200,20 L 200,50 M 200,150 L 200,180" stroke="#06b6d4" stroke-width="2"/>
+            <!-- Corner Brackets -->
+            <path d="M 40,45 L 40,30 L 65,30" fill="none" stroke="#38bdf8" stroke-width="2"/>
+            <path d="M 360,45 L 360,30 L 335,30" fill="none" stroke="#38bdf8" stroke-width="2"/>
+            <path d="M 40,155 L 40,170 L 65,170" fill="none" stroke="#38bdf8" stroke-width="2"/>
+            <path d="M 360,155 L 360,170 L 335,170" fill="none" stroke="#38bdf8" stroke-width="2"/>
+            <!-- Data meters -->
+            <rect x="55" y="60" width="40" height="4" fill="#06b6d4"/>
+            <rect x="55" y="70" width="30" height="4" fill="#06b6d4"/>
+            <rect x="55" y="80" width="50" height="4" fill="#38bdf8"/>
+            <rect x="305" y="60" width="40" height="4" fill="#06b6d4"/>
+            <rect x="315" y="70" width="30" height="4" fill="#38bdf8"/>
+            <rect x="295" y="80" width="50" height="4" fill="#06b6d4"/>
+            <text x="200" y="104" font-family="'Space Grotesk', monospace" font-size="10" fill="#38bdf8" text-anchor="middle" letter-spacing="2">LOCKED 99.8%</text>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title-row">
+            <h3 class="card-title">Cyberpunk HUD Telemetry</h3>
+            <span class="item-year">2026</span>
+          </div>
+          <p class="card-desc">High-density sci-fi avionics heads-up display engineered with vector precision and dynamic tactical reticles.</p>
+          <div class="card-tags">
+            <span class="card-tag">#SciFiHUD</span>
+            <span class="card-tag">#DataViz</span>
+            <span class="card-tag">#Vector</span>
+          </div>
+          <div class="card-footer-action">
+            <span class="inspect-hint">Explore Details →</span>
+            <span class="item-year">Vector HUD</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Item 5: Chromatic Waveform Synth -->
+      <article class="gallery-card" data-category="3d" data-index="4">
+        <div class="card-preview">
+          <span class="card-category-badge">🌊 3D & Motion</span>
+          <button class="card-like-btn" data-id="item-5" title="Appreciate project">
+            <span class="like-heart">🤍</span>
+            <span class="like-count">167</span>
+          </button>
+          <!-- SVG Artwork: Harmonic Sound Waveforms -->
+          <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g5-wave1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ec4899"/>
+                <stop offset="50%" stop-color="#a855f7"/>
+                <stop offset="100%" stop-color="#38bdf8"/>
+              </linearGradient>
+              <linearGradient id="g5-wave2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#6366f1" stop-opacity="0.8"/>
+              </linearGradient>
+            </defs>
+            <!-- Sine Waveforms stacked in pseudo 3D -->
+            <path d="M 20,130 Q 80,40 140,110 T 260,120 T 380,80" fill="none" stroke="url(#g5-wave2)" stroke-width="2" stroke-dasharray="6 4"/>
+            <path d="M 20,115 Q 90,170 160,90 T 280,105 T 380,130" fill="none" stroke="#8b5cf6" stroke-width="2.5" opacity="0.7"/>
+            <path d="M 20,100 Q 100,20 180,110 T 300,80 T 380,100" fill="none" stroke="url(#g5-wave1)" stroke-width="4.5" stroke-linecap="round"/>
+            <path d="M 20,85 Q 110,140 190,70 T 310,120 T 380,75" fill="none" stroke="#ec4899" stroke-width="2" opacity="0.85"/>
+            <!-- Frequency Peaks -->
+            <circle cx="180" cy="110" r="5" fill="#38bdf8"/>
+            <circle cx="100" cy="20" r="4" fill="#fbbf24"/>
+            <circle cx="300" cy="80" r="5" fill="#ec4899"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title-row">
+            <h3 class="card-title">Chromatic Waveform Synth</h3>
+            <span class="item-year">2026</span>
+          </div>
+          <p class="card-desc">Spatial audio waveform visualizer interpreting multi-frequency acoustic oscillations in real-time color spectra.</p>
+          <div class="card-tags">
+            <span class="card-tag">#WebAudio</span>
+            <span class="card-tag">#Synthesizer</span>
+            <span class="card-tag">#Oscilloscope</span>
+          </div>
+          <div class="card-footer-action">
+            <span class="inspect-hint">Explore Details →</span>
+            <span class="item-year">Audio-Reactive</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Item 6: Holographic Prism Core -->
+      <article class="gallery-card" data-category="generative" data-index="5">
+        <div class="card-preview">
+          <span class="card-category-badge">💎 Generative</span>
+          <button class="card-like-btn" data-id="item-6" title="Appreciate project">
+            <span class="like-heart">🤍</span>
+            <span class="like-count">248</span>
+          </button>
+          <!-- SVG Artwork: Prismatic Crystal Refraction -->
+          <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g6-prism" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#38bdf8"/>
+                <stop offset="33%" stop-color="#a855f7"/>
+                <stop offset="66%" stop-color="#ec4899"/>
+                <stop offset="100%" stop-color="#fbbf24"/>
+              </linearGradient>
+            </defs>
+            <!-- Incident Ray -->
+            <line x1="40" y1="100" x2="170" y2="100" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+            <!-- Triangle Prism -->
+            <polygon points="200,35 255,155 145,155" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+            <polygon points="200,45 245,150 155,150" fill="none" stroke="rgba(168,85,247,0.3)" stroke-width="1"/>
+            <!-- Refracted Spectral Fan -->
+            <polygon points="215,100 370,55 370,145" fill="url(#g6-prism)" opacity="0.35"/>
+            <line x1="215" y1="100" x2="370" y2="55" stroke="#ef4444" stroke-width="2"/>
+            <line x1="215" y1="100" x2="370" y2="72" stroke="#f59e0b" stroke-width="2"/>
+            <line x1="215" y1="100" x2="370" y2="90" stroke="#10b981" stroke-width="2"/>
+            <line x1="215" y1="100" x2="370" y2="108" stroke="#06b6d4" stroke-width="2"/>
+            <line x1="215" y1="100" x2="370" y2="126" stroke="#6366f1" stroke-width="2"/>
+            <line x1="215" y1="100" x2="370" y2="145" stroke="#a855f7" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title-row">
+            <h3 class="card-title">Holographic Prism Core</h3>
+            <span class="item-year">2026</span>
+          </div>
+          <p class="card-desc">Optical caustic dispersion simulation breaking pure white collimated light into continuous spectral gradients.</p>
+          <div class="card-tags">
+            <span class="card-tag">#Optics</span>
+            <span class="card-tag">#Caustics</span>
+            <span class="card-tag">#Raymarching</span>
+          </div>
+          <div class="card-footer-action">
+            <span class="inspect-hint">Explore Details →</span>
+            <span class="item-year">Physical Sim</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Item 7: Nexus Design Token Kit -->
+      <article class="gallery-card" data-category="ui" data-index="6">
+        <div class="card-preview">
+          <span class="card-category-badge">🧩 UI & Systems</span>
+          <button class="card-like-btn" data-id="item-7" title="Appreciate project">
+            <span class="like-heart">🤍</span>
+            <span class="like-count">192</span>
+          </button>
+          <!-- SVG Artwork: Component Library Matrix -->
+          <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Modular interactive blocks -->
+            <rect x="50" y="40" width="85" height="45" rx="10" fill="rgba(99,102,241,0.25)" stroke="#6366f1" stroke-width="1.5"/>
+            <circle cx="70" cy="62" r="8" fill="#6366f1"/>
+            <rect x="85" y="58" width="35" height="8" rx="4" fill="#ffffff" opacity="0.7"/>
+
+            <rect x="150" y="40" width="95" height="45" rx="10" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="1.5"/>
+            <rect x="165" y="58" width="65" height="8" rx="4" fill="#ec4899"/>
+
+            <rect x="260" y="40" width="90" height="45" rx="22.5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
+            <circle cx="282" cy="62" r="14" fill="#10b981"/>
+
+            <!-- Bottom Row: Sliders and controls -->
+            <rect x="50" y="105" width="180" height="55" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <line x1="70" y1="132" x2="210" y2="132" stroke="rgba(255,255,255,0.2)" stroke-width="4" stroke-linecap="round"/>
+            <line x1="70" y1="132" x2="155" y2="132" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="155" cy="132" r="8" fill="#ffffff" stroke="#38bdf8" stroke-width="3"/>
+
+            <rect x="245" y="105" width="105" height="55" rx="12" fill="rgba(139,92,246,0.15)" stroke="#8b5cf6" stroke-width="1.2"/>
+            <circle cx="275" cy="132" r="10" fill="none" stroke="#8b5cf6" stroke-width="3"/>
+            <circle cx="320" cy="132" r="10" fill="#8b5cf6"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title-row">
+            <h3 class="card-title">Nexus Design Token Kit</h3>
+            <span class="item-year">2026</span>
+          </div>
+          <p class="card-desc">Atomic component ecosystem with dynamic theme variables, accessibility contracts, and micro-interaction states.</p>
+          <div class="card-tags">
+            <span class="card-tag">#DesignTokens</span>
+            <span class="card-tag">#Components</span>
+            <span class="card-tag">#FigmaTokens</span>
+          </div>
+          <div class="card-footer-action">
+            <span class="inspect-hint">Explore Details →</span>
+            <span class="item-year">Production</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Item 8: Cosmic Singularity Void -->
+      <article class="gallery-card" data-category="generative" data-index="7">
+        <div class="card-preview">
+          <span class="card-category-badge">🌌 Generative</span>
+          <button class="card-like-btn" data-id="item-8" title="Appreciate project">
+            <span class="like-heart">🤍</span>
+            <span class="like-count">331</span>
+          </button>
+          <!-- SVG Artwork: Black Hole Gravitational Lensing -->
+          <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="g8-singularity" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#000000"/>
+                <stop offset="65%" stop-color="#05060a"/>
+                <stop offset="85%" stop-color="#f59e0b" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#ec4899" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <!-- Accretion Disk Swirl -->
+            <ellipse cx="200" cy="100" rx="140" ry="24" fill="none" stroke="#f59e0b" stroke-width="4" opacity="0.85" transform="rotate(-15 200 100)"/>
+            <ellipse cx="200" cy="100" rx="120" ry="32" fill="none" stroke="#ec4899" stroke-width="2.5" opacity="0.6" transform="rotate(-12 200 100)"/>
+            <ellipse cx="200" cy="100" rx="100" ry="40" fill="none" stroke="#6366f1" stroke-width="1.8" opacity="0.5" transform="rotate(-8 200 100)"/>
+            <!-- Event Horizon -->
+            <circle cx="200" cy="100" r="42" fill="url(#g8-singularity)"/>
+            <circle cx="200" cy="100" r="32" fill="#000000" stroke="#fbbf24" stroke-width="2"/>
+            <!-- Photon Sphere Highlights -->
+            <path d="M 160,88 Q 200,60 240,88" fill="none" stroke="#fde047" stroke-width="2" opacity="0.8"/>
+            <circle cx="110" cy="80" r="2" fill="#ffffff"/>
+            <circle cx="280" cy="125" r="3" fill="#fbbf24"/>
+            <circle cx="320" cy="65" r="1.5" fill="#ffffff"/>
+            <circle cx="90" cy="130" r="2" fill="#38bdf8"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-title-row">
+            <h3 class="card-title">Cosmic Singularity Void</h3>
+            <span class="item-year">2026</span>
+          </div>
+          <p class="card-desc">Astrophysical event horizon visualization featuring relativistic Kerr spacetime curvature and glowing accretion matter.</p>
+          <div class="card-tags">
+            <span class="card-tag">#Physics</span>
+            <span class="card-tag">#BlackHole</span>
+            <span class="card-tag">#Cosmic</span>
+          </div>
+          <div class="card-footer-action">
+            <span class="inspect-hint">Explore Details →</span>
+            <span class="item-year">Relativistic</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-number">8</div>
+        <div class="stat-label">Artworks</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">60 FPS</div>
+        <div class="stat-label">Accelerated</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Vector Native</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">0ms</div>
+        <div class="stat-label">Asset Delay</div>
+      </div>
+    </div>
+
+    <!-- Linked Actions -->
+    <div class="actions">
+      <a href="contact.html" class="btn btn-primary">
+        <span>Get in Touch ✉️</span>
+      </a>
+      <a href="about.html" class="btn btn-secondary">
+        <span>About Our Vision 📖</span>
+      </a>
+      <a href="index.html" class="btn btn-secondary">
+        <span>← Back to Home</span>
+      </a>
+    </div>
+
+    <div class="card-footer">
+      <span>Project 1 &bull; Gallery Showcase</span>
+      <span class="status-clock" id="liveClock">--:--:--</span>
+    </div>
+  </main>
+
+  <!-- Interactive Lightbox Modal -->
+  <div class="modal-backdrop" id="galleryModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box">
+      <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">&times;</button>
+      <div class="modal-preview-zone" id="modalSvgContainer">
+        <!-- Injected SVG -->
+      </div>
+      <div class="modal-content">
+        <span class="modal-badge" id="modalBadge">UI & Systems</span>
+        <h2 class="modal-title" id="modalTitle">Neo-Glass UI System</h2>
+        <p class="modal-long-desc" id="modalDesc">
+          Full detailed overview of this masterpiece...
+        </p>
+
+        <div class="modal-specs-grid">
+          <div class="spec-item">
+            <span class="spec-name">Render Engine</span>
+            <span class="spec-val" id="specRender">Vector GPU Accelerated</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-name">Color Palette</span>
+            <span class="spec-val" id="specPalette">Indigo / Cyan / Magenta</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-name">Aspect Ratio</span>
+            <span class="spec-val">16:9 Responsive Viewport</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-name">Created</span>
+            <span class="spec-val">Project 1 • 2026</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-primary" id="modalLikeBtn">
+            <span>❤️ Appreciate (<span id="modalLikeCount">0</span>)</span>
+          </button>
+          <button class="btn btn-secondary" id="modalShareBtn">
+            <span>🔗 Copy Share Link</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Live Clock Display
+    function updateClock() {
+      const now = new Date();
+      const el = document.getElementById('liveClock');
+      if (el) {
+        el.textContent = now.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      }
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // 3D Tilt Effect on Container
+    const card = document.getElementById('tiltCard');
+    document.addEventListener('mousemove', (e) => {
+      // Disable tilt if modal is open
+      if (document.getElementById('galleryModal').classList.contains('active')) return;
+      const { innerWidth: width, innerHeight: height } = window;
+      const x = (e.clientX - width / 2) / (width / 2);
+      const y = (e.clientY - height / 2) / (height / 2);
+
+      const maxTilt = 4;
+      const tiltX = -y * maxTilt;
+      const tiltY = x * maxTilt;
+
+      card.style.transform = `rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
+    });
+
+    document.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    });
+
+    // Particle Canvas Engine
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor(x, y, isBurst = false) {
+        this.x = x ?? Math.random() * canvas.width;
+        this.y = y ?? Math.random() * canvas.height;
+        this.isBurst = isBurst;
+        this.radius = isBurst ? Math.random() * 4 + 2 : Math.random() * 2 + 0.5;
+
+        if (isBurst) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 6 + 2;
+          this.vx = Math.cos(angle) * speed;
+          this.vy = Math.sin(angle) * speed - 1.5;
+          this.gravity = 0.15;
+          this.alpha = 1;
+          this.decay = Math.random() * 0.03 + 0.02;
+        } else {
+          this.vx = (Math.random() - 0.5) * 0.4;
+          this.vy = -Math.random() * 0.6 - 0.2;
+          this.alpha = Math.random() * 0.5 + 0.2;
+          this.decay = 0;
+        }
+
+        const colors = ['#6366f1', '#ec4899', '#38bdf8', '#fbbf24', '#a855f7', '#34d399'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      update() {
+        if (this.isBurst) {
+          this.vy += this.gravity;
+          this.x += this.vx;
+          this.y += this.vy;
+          this.alpha -= this.decay;
+        } else {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.y < -10) this.y = canvas.height + 10;
+          if (this.x < -10) this.x = canvas.width + 10;
+          if (this.x > canvas.width + 10) this.x = -10;
+        }
+      }
+
+      draw() {
+        if (this.alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < 40; i++) {
+      particles.push(new Particle());
+    }
+
+    function spawnBurst(x, y, count = 20) {
+      for (let i = 0; i < count; i++) {
+        particles.push(new Particle(x, y, true));
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.update();
+        p.draw();
+        if (p.isBurst && p.alpha <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Gallery Category Filtering & Live Search
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const galleryCards = document.querySelectorAll('.gallery-card');
+    const searchInput = document.getElementById('gallerySearch');
+    let currentCategory = 'all';
+
+    function filterGallery() {
+      const query = searchInput.value.toLowerCase().trim();
+
+      galleryCards.forEach(card => {
+        const category = card.dataset.category;
+        const text = card.textContent.toLowerCase();
+
+        const matchesCat = (currentCategory === 'all' || category === currentCategory);
+        const matchesQuery = (!query || text.includes(query));
+
+        if (matchesCat && matchesQuery) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCategory = btn.dataset.category;
+        filterGallery();
+      });
+    });
+
+    searchInput.addEventListener('input', filterGallery);
+
+    // Like Button Interaction
+    document.querySelectorAll('.card-like-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const heart = btn.querySelector('.like-heart');
+        const countSpan = btn.querySelector('.like-count');
+        let count = parseInt(countSpan.textContent, 10);
+
+        if (btn.classList.contains('liked')) {
+          btn.classList.remove('liked');
+          heart.textContent = '🤍';
+          countSpan.textContent = count - 1;
+        } else {
+          btn.classList.add('liked');
+          heart.textContent = '❤️';
+          countSpan.textContent = count + 1;
+          const rect = btn.getBoundingClientRect();
+          spawnBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 16);
+        }
+      });
+    });
+
+    // Gallery Extended Data for Modal
+    const galleryDetails = [
+      {
+        title: "Neo-Glass UI System",
+        badge: "UI & Systems",
+        desc: "Designed with modern layered depth, Neo-Glass provides a complete visual architecture for next-generation web apps. It features dynamic light diffusion, backdrop blur filters, and real-time GPU-accelerated gauges.",
+        render: "CSS3 Glassmorphism & SVG Filters",
+        palette: "Deep Space / Indigo / Violet",
+        likes: 142
+      },
+      {
+        title: "Quantum Aurora 3D",
+        badge: "3D & Motion",
+        desc: "An exploration of planetary gravitational fields and orbital resonant harmonics. Rendered with ultra-smooth 60fps animations, iridescent glow spheres, and orbital particle trails.",
+        render: "WebGL & Three.js Vectors",
+        palette: "Sky Blue / Neon Pink / Ultraviolet",
+        likes: 219
+      },
+      {
+        title: "Neural Synapse Matrix",
+        badge: "Generative",
+        desc: "Simulating pulse-propagation across deep learning clusters. Each node dynamically negotiates weighted connections based on proximity and signal density, forming organic algorithmic constellations.",
+        render: "HTML5 Canvas Vector Pathways",
+        palette: "Emerald / Cyan / Deep Indigo",
+        likes: 184
+      },
+      {
+        title: "Cyberpunk HUD Telemetry",
+        badge: "UI & Systems",
+        desc: "A futuristic tactical display interface built for autonomous cockpits. Features high-contrast vector reticles, precise targeting crosshairs, telemetry gauges, and micro-metric status flags.",
+        render: "Scalable Vector Graphics (SVG)",
+        palette: "Electric Cyan / Azure / Midnight",
+        likes: 305
+      },
+      {
+        title: "Chromatic Waveform Synth",
+        badge: "3D & Motion",
+        desc: "Real-time acoustic frequency spectrum visualization. Generates layered sine and cosine harmonic waves with dynamic amplitude modulation to create immersive audio-visual synesthesia.",
+        render: "Oscilloscope Waveform Engine",
+        palette: "Hot Pink / Purple / Amber",
+        likes: 167
+      },
+      {
+        title: "Holographic Prism Core",
+        badge: "Generative",
+        desc: "Physics-inspired refraction simulation demonstrating Snell's Law in action. An incident ray of white light enters a crystal matrix, dispersing into full continuous spectral chromatic caustic fans.",
+        render: "Raymarching Caustics Simulation",
+        palette: "Full Spectrum Rainbow",
+        likes: 248
+      },
+      {
+        title: "Nexus Design Token Kit",
+        badge: "UI & Systems",
+        desc: "A production-grade design system token repository bridging code and design. Enforces unified elevation layers, typography scales, accessibility color contrast ratios, and kinetic motion tokens.",
+        render: "Web Components & Atomic Tokens",
+        palette: "Slate / Cobalt / Emerald",
+        likes: 192
+      },
+      {
+        title: "Cosmic Singularity Void",
+        badge: "Generative",
+        desc: "Visualizing extreme gravitational lensing around a rotating Kerr black hole. Features photon sphere Doppler boosting, relativistic light warping, and glowing swirling accretion matter.",
+        render: "Astrophysical Shader Model",
+        palette: "Obsidian / Gold Flare / Magenta",
+        likes: 331
+      }
+    ];
+
+    // Modal Interaction
+    const modal = document.getElementById('galleryModal');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalSvgContainer = document.getElementById('modalSvgContainer');
+    const modalBadge = document.getElementById('modalBadge');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const specRender = document.getElementById('specRender');
+    const specPalette = document.getElementById('specPalette');
+    const modalLikeBtn = document.getElementById('modalLikeBtn');
+    const modalLikeCount = document.getElementById('modalLikeCount');
+    const modalShareBtn = document.getElementById('modalShareBtn');
+    let activeCardIndex = null;
+
+    galleryCards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        // Prevent opening modal when clicking like button
+        if (e.target.closest('.card-like-btn')) return;
+
+        const idx = parseInt(card.dataset.index, 10);
+        const data = galleryDetails[idx];
+        activeCardIndex = idx;
+
+        const svgEl = card.querySelector('.card-preview svg').cloneNode(true);
+        modalSvgContainer.innerHTML = '';
+        modalSvgContainer.appendChild(svgEl);
+
+        modalBadge.textContent = data.badge;
+        modalTitle.textContent = data.title;
+        modalDesc.textContent = data.desc;
+        specRender.textContent = data.render;
+        specPalette.textContent = data.palette;
+
+        // Sync like count with card
+        const cardLikeSpan = card.querySelector('.like-count');
+        modalLikeCount.textContent = cardLikeSpan.textContent;
+
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    function closeModal() {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      activeCardIndex = null;
+    }
+
+    modalCloseBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    modalLikeBtn.addEventListener('click', () => {
+      if (activeCardIndex !== null) {
+        const card = galleryCards[activeCardIndex];
+        const cardLikeBtn = card.querySelector('.card-like-btn');
+        cardLikeBtn.click();
+        const cardLikeSpan = card.querySelector('.like-count');
+        modalLikeCount.textContent = cardLikeSpan.textContent;
+      }
+    });
+
+    modalShareBtn.addEventListener('click', () => {
+      const url = window.location.href.split('#')[0];
+      navigator.clipboard?.writeText(url).then(() => {
+        const origText = modalShareBtn.innerHTML;
+        modalShareBtn.innerHTML = '<span>✅ Link Copied!</span>';
+        setTimeout(() => {
+          modalShareBtn.innerHTML = origText;
+        }, 2000);
+      }).catch(() => {
+        alert('Share link: ' + url);
+      });
+    });
+  </script>
+</body>
+</html>
